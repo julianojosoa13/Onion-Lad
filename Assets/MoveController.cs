@@ -10,6 +10,7 @@ public class MoveController : MonoBehaviour
     [SerializeField] private float jumpHigh;
 
     private Rigidbody2D rb;
+    private SpriteRenderer mySprite;
     private Transform groundCheck;
 
     private float xInput;
@@ -30,10 +31,12 @@ public class MoveController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        mySprite = GetComponent<SpriteRenderer>();
 
+        /*
         Debug.Log(whatIsGround.value);
         Debug.Log(groundCheckRadius);
-        Debug.Log(groundCheck.position);
+        Debug.Log(groundCheck.position);*/
     }
 
     // Update is called once per frame
@@ -67,6 +70,9 @@ public class MoveController : MonoBehaviour
                 rb.velocity = new Vector2(moveSpeed * xInput, rb.velocity.y);
             }
         }
+
+        if (xInput < 0) mySprite.flipX = true;
+        if (xInput > 0) mySprite.flipX = false;
     }
 
     private void OnDrawGizmos()
