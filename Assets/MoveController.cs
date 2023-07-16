@@ -12,7 +12,8 @@ public class MoveController : MonoBehaviour
     private Rigidbody2D rb;
     private SpriteRenderer mySprite;
     private Transform groundCheck;
-
+    private Animator anim;
+    private bool isJumping;
     private float xInput;
 
     [Header("Collision Check")]
@@ -30,6 +31,7 @@ public class MoveController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         mySprite = GetComponent<SpriteRenderer>();
 
@@ -42,12 +44,27 @@ public class MoveController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        isJumping = false;
+
         CollisionChecks();
-
-        xInput = Input.GetAxisRaw("Horizontal");
+        Inputs();
         Movement();
+        Animations();
 
+    }
+
+    private void Inputs()
+    {
+        xInput = Input.GetAxisRaw("Horizontal");
         if (Input.GetKeyDown(KeyCode.Space)) Jump();
+    }
+
+    private void Animations()
+    {
+        bool isMoving = (xInput != 0);
+        anim.SetBool("isMoving", isMoving);
+        anim.SetBool("isGrounded", isGrounded);
+        anim.SetBool("isJumping", isJumping);
     }
 
     private void CollisionChecks()
@@ -57,19 +74,17 @@ public class MoveController : MonoBehaviour
 
     private void Jump()
     {
-        if(isGrounded == true) rb.velocity = new Vector2(rb.velocity.x, jumpHigh);
+        if (isGrounded == true) {
+            rb.velocity = new Vector2(rb.velocity.x, jumpHigh);
+            isJumping = true;
+        }
     }
 
     private void Movement()
     {
-        if (isGrounded== true) rb.velocity = new Vector2(moveSpeed * xInput, rb.velocity.y);
-        else
-        {
-            if (xInput != 0)
-            {
-                rb.velocity = new Vector2(moveSpeed * xInput, rb.velocity.y);
-            }
-        }
+        if (isGrounded == true) rb.velocity = new Vector2(moveSpeed * xInput, rb.velocity.y);
+        else if (xInput != 0) rb.velocity = new Vector2(moveSpeed * xInput, rb.velocity.y);
+      
 
         if (xInput < 0) mySprite.flipX = true;
         if (xInput > 0) mySprite.flipX = false;
